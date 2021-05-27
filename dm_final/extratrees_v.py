@@ -11,7 +11,7 @@ import reader
 # p_threshold：类别型特征的卡方阈值
 # k_part：数据集的等分数量，训练集合占k - 1份，测试集占1份
 # n_part：将标签为1的数据划分为两份，并且选择其中的第n份，当n大于1则选取全部
-# shuffle：是否将原数据打乱
+# do_shuffle：是否将原数据打乱
 def v1_filter(b_threshold, v_threshold, p_threshold, k_part, n_part, do_shuffle=False):
     # 加载训练数据
     d, f = reader.readVTrainingData_2('./dm_final/data/V1_ECFP4.csv', k_part, n_part, do_shuffle)
@@ -75,7 +75,7 @@ def v1_filter(b_threshold, v_threshold, p_threshold, k_part, n_part, do_shuffle=
     return y_true, y_pred
 
 if __name__ == '__main__':
-    y_true, y_pred_0 = v1_filter(5, 0.015, 0, 3, 2, False)
+    y_true, y_pred_0 = v1_filter(5, 0.015, 0, 3, 0, True)
     _, y_pred_1 = v1_filter(5, 0.015, 0, 3, 1, False)
     _, y_pred_2 = v1_filter(5, 0.015, 0, 3, 0, False)
     _, y_pred_3 = v1_filter(5, 0.015, 0, 3, 0, True)
@@ -84,22 +84,22 @@ if __name__ == '__main__':
     _, y_pred_6 = v1_filter(5, 0.015, 0, 3, 0, True)
     for i in range(len(y_pred_0)):
         c = 0
-        if y_pred_0[i] == 0:
+        if y_pred_0[i] == 1:
             c += 1
-        if y_pred_1[i] == 0:
+        if y_pred_1[i] == 1:
             c += 1
-        if y_pred_2[i] == 0:
+        if y_pred_2[i] == 1:
             c += 1
-        if y_pred_3[i] == 0:
+        if y_pred_3[i] == 1:
             c += 1
-        if y_pred_4[i] == 0:
+        if y_pred_4[i] == 1:
             c += 1
-        if y_pred_5[i] == 0:
+        if y_pred_5[i] == 1:
             c += 1
-        if y_pred_6[i] == 0:
+        if y_pred_6[i] == 1:
             c += 1
-        if c >= 5:
-            y_pred_0[i] = 0
+        if c >= 1:
+            y_pred_0[i] = 1
 
 
     utils.show_result(y_true, y_pred_0)
