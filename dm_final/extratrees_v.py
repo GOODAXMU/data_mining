@@ -10,9 +10,11 @@ import reader
 # v_threshold：数值型特征的方差阈值
 # p_threshold：类别型特征的卡方阈值
 # k_part：数据集的等分数量，训练集合占k - 1份，测试集占1份
-def v1_filter(b_threshold, v_threshold, p_threshold, k_part):
+# n_part：将标签为1的数据划分为两份，并且选择其中的第n份，当n大于1则选取全部
+# shuffle：是否将原数据打乱
+def v1_filter(b_threshold, v_threshold, p_threshold, k_part, n_part, do_shuffle=False):
     # 加载训练数据
-    d, f = reader.readVTrainingData('./dm_final/data/V1_ECFP4.csv', k_part)
+    d, f = reader.readVTrainingData_2('./dm_final/data/V1_ECFP4.csv', k_part, n_part, do_shuffle)
     # 将数值型和类别型数据分开
     d1, d2 = utils.split_v1(d)
     # 转numpy后计算每列的方差以及每列的和
@@ -70,7 +72,34 @@ def v1_filter(b_threshold, v_threshold, p_threshold, k_part):
     # 评价结果
     utils.show_result(y_true, y_pred)
 
-    return
+    return y_true, y_pred
 
 if __name__ == '__main__':
-    v1_filter(0, 0.015, 0.1)
+    y_true, y_pred_0 = v1_filter(5, 0.015, 0, 3, 2, False)
+    _, y_pred_1 = v1_filter(5, 0.015, 0, 3, 1, False)
+    _, y_pred_2 = v1_filter(5, 0.015, 0, 3, 0, False)
+    _, y_pred_3 = v1_filter(5, 0.015, 0, 3, 0, True)
+    _, y_pred_4 = v1_filter(5, 0.015, 0, 3, 0, True)
+    _, y_pred_5 = v1_filter(5, 0.015, 0, 3, 0, True)
+    _, y_pred_6 = v1_filter(5, 0.015, 0, 3, 0, True)
+    for i in range(len(y_pred_0)):
+        c = 0
+        if y_pred_0[i] == 0:
+            c += 1
+        if y_pred_1[i] == 0:
+            c += 1
+        if y_pred_2[i] == 0:
+            c += 1
+        if y_pred_3[i] == 0:
+            c += 1
+        if y_pred_4[i] == 0:
+            c += 1
+        if y_pred_5[i] == 0:
+            c += 1
+        if y_pred_6[i] == 0:
+            c += 1
+        if c >= 5:
+            y_pred_0[i] = 0
+
+
+    utils.show_result(y_true, y_pred_0)
