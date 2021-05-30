@@ -1,39 +1,42 @@
 import csv
 import random
 
-def readDCTrainingData(file):
-    r = []
+def readDCData(file, k):
+    # 训练集特征
+    d = []
+    # 训练集标签
     flag = []
+    # 测试集特征
+    td = []
+    # 测试集标签
+    tf = []
     with open(file, 'r') as f:
         reader = csv.reader(f)
         i = 0
         for row in reader:
             i += 1
-            if i == 1 or i % 3 == 0:
+            if i == 1:
                 continue
-            # 非调试情况下请删掉！！！！！！
-            if i > 10:
-                break
-            r.append(list(map(float, row[1 : len(row) - 1])))
-            flag.append(int(float(row[len(row) - 1])))
-    return r, flag
+            temp_d = []
+            for j in range(882, 1915):
+                temp_d.append(float(row[j]))
+            for j in range(2796, 4806):
+                temp_d.append(float(row[j]))
+            for j in range(1, 882):
+                temp_d.append(float(row[j]))
+            for j in range(1915, 2796):
+                temp_d.append(float(row[j]))
+            if i % k == 0:
+                td.append(temp_d)
+                tf.append(float(row[-1]))
+            else:
+                d.append(temp_d)
+                flag.append(float(row[-1]))
+    c_0 = 0
+    c_1 = 0
+    c_2 = 0
 
-def readDCTestData(file):
-    r = []
-    flag = []
-    with open(file, 'r') as f:
-        reader = csv.reader(f)
-        i = 0
-        for row in reader:
-            i += 1
-            if i == 1 or i % 3 != 0:
-                continue
-            # 非调试情况下请删掉！！！！！！
-            if i > 10:
-                break
-            r.append(list(map(float, row[1 : len(row) - 1])))
-            flag.append(int(float(row[len(row) - 1])))
-    return r, flag
+    return d, flag, td, tf
 
 # k表示讲数据集分为k份，训练数据排除其中一份，需要与加载测试数据时的k值相等
 def readVTrainingData(file, k, do_shuffle=False):
@@ -112,5 +115,4 @@ def get_cols(arr, s, e):
     return r
 
 if __name__ == '__main__':
-    readDCTrainingData('./dm_final/data/drug_combination.csv')
-    readDCTestData('./dm_final/data/drug_combination.csv')
+    readDCData('./dm_final/data/drug_combination.csv')

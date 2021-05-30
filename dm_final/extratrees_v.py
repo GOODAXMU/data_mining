@@ -74,7 +74,61 @@ def v1_filter(b_threshold, v_threshold, p_threshold, k_part, n_part, do_shuffle=
 
     return y_true, y_pred
 
-if __name__ == '__main__':
+
+# 不做任何优化
+def v1_optimize_0():
+    y_true, y_pred = v1_filter(0, 0, 0, 0, 0, False)
+    utils.show_result(y_true, y_pred)
+    return
+
+# 类别型和数值型分别训练两个模型，最后投票，画条形图对比什么都不做的效果
+def v1_optimize_1():
+    # 只用数值型训练
+    y_true, y_pred_0 = v1_filter(1000000, 0, 0, 3, 3, False)
+    # 只用类别型训练
+    _, y_pred_1 = v1_filter(0, 1.0, 0, 3, 3, False)
+
+    # 两个模型都判为0，才认为最终结果为0
+    y_pred = []
+    for i in range(y_pred_0):
+        if y_pred_0[i] == 0 and y_pred_1[i] == 0:
+            y_pred.append(0)
+        else:
+            y_pred.append(1)
+
+    utils.show_result(y_true, y_pred)
+
+    return y_true, y_pred
+
+# 通过总和过滤特征，画折线图，表示总和阈值对指标的影响
+def v1_optimize_2():
+    for i in range(20):
+        y_true, y_pred = v1_filter(i, 0, 0, 3, 3, False)
+        utils.show_result(y_true, y_pred)
+    return
+
+# 通过方差过滤特征，画折线图，表示方差阈值对指标的影响
+def v1_optimize_3():
+    for i in range(100):
+        y_true, y_pred = v1_filter(0, i / 1000, 0, 3, 3, False)
+        utils.show_result(y_true, y_pred)
+    return
+
+# 通过卡方概率过滤特征，画折线图，表示卡方概率阈值对指标的影响
+def v1_optimize_3():
+    for i in range(50):
+        y_true, y_pred = v1_filter(0, 0, i / 100, 3, 3, False)
+        utils.show_result(y_true, y_pred)
+    return
+
+# 控制0，1比例为1：1，过滤阈值选上的得到的最优值
+def v1_optimize_4():
+    y_true, y_pred = v1_filter(0, 0, 0, 3, 0, False)
+    utils.show_result(y_true, y_pred)
+    return
+
+# 多个极限森林投票，过滤阈值选上的得到的最优值
+def v1_optimize_5():
     y_true, y_pred_0 = v1_filter(5, 0.015, 0, 3, 0, True)
     _, y_pred_1 = v1_filter(5, 0.015, 0, 3, 1, False)
     _, y_pred_2 = v1_filter(5, 0.015, 0, 3, 0, False)
@@ -84,22 +138,30 @@ if __name__ == '__main__':
     _, y_pred_6 = v1_filter(5, 0.015, 0, 3, 0, True)
     for i in range(len(y_pred_0)):
         c = 0
-        if y_pred_0[i] == 1:
+        if y_pred_0[i] == 0:
             c += 1
-        if y_pred_1[i] == 1:
+        if y_pred_1[i] == 0:
             c += 1
-        if y_pred_2[i] == 1:
+        if y_pred_2[i] == 0:
             c += 1
-        if y_pred_3[i] == 1:
+        if y_pred_3[i] == 0:
             c += 1
-        if y_pred_4[i] == 1:
+        if y_pred_4[i] == 0:
             c += 1
-        if y_pred_5[i] == 1:
+        if y_pred_5[i] == 0:
             c += 1
-        if y_pred_6[i] == 1:
+        if y_pred_6[i] == 0:
             c += 1
-        if c >= 1:
-            y_pred_0[i] = 1
-
+        if c >= 2:
+            y_pred_0[i] = 0
 
     utils.show_result(y_true, y_pred_0)
+
+    return
+
+if __name__ == '__main__':
+    v1_optimize_1()
+    #v1_optimize_2()
+    #v1_optimize_3()
+    #v1_optimize_4()
+    #v1_optimize_5()
